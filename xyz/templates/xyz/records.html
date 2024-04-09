@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Latest Records</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            table-layout: fixed;
+        }
+
+        th, td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: center;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
+
+        .table-container {
+            max-height: 300px; /* 设置最大高度 */
+            overflow-y: auto; /* 启用纵向滚动条 */
+        }
+    </style>
+</head>
+<body>
+    <h1>Latest Records</h1>
+    <div class="table-container"> <!-- 使用一个容器包裹表格 -->
+        <table>
+            <thead>
+                <tr>
+                    <th>X</th>
+                    <th>Y</th>
+                    <th>Z</th>
+                    <th>Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for record in latest_records %}
+                <tr>
+                    <td>{{ record.x }}</td>
+                    <td>{{ record.y }}</td>
+                    <td>{{ record.z }}</td>
+                    <td>{{ record.date|date:"Y-m-d H:i:s" }}</td> <!-- 使用 date 过滤器 -->
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>
