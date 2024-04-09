@@ -24,9 +24,16 @@
             max-height: 300px; /* 设置最大高度 */
             overflow-y: auto; /* 启用纵向滚动条 */
         }
+
+        .hidden-table {
+            border: none;
+        }
     </style>
 </head>
 <body>
+    <!-- Add the {% load static %} tag to load static template tags -->
+    {% load static %}
+
     <h1>Latest Records</h1>
     <div class="table-container"> <!-- 使用一个容器包裹表格 -->
         <table>
@@ -50,5 +57,26 @@
             </tbody>
         </table>
     </div>
+
+    <!-- 新的表格用来显示图片和说明 -->
+    <table class="hidden-table">
+        <tbody>
+            <tr>
+                <td colspan="4" style="text-align: center;">
+                    <h2>Accelerometer Information</h2>
+                    <p>When the refresh button is clicked, this Web Application will query the attitude information of the GY-80 device, 
+                        record it in the database, and return the latest 5 attitude information. </p>
+                    <p> The accelerometer on the GY-80 will record the current acceleration state. When placed flat, 
+                        the acceleration in one direction will approach the gravitational constant 9.8 m/s<sup>2</sup>, while the other two directions will approach 0 m/s<sup>2</sup>.</p>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="4" style="text-align: center;">
+                    <img src="{% static 'xyz/images/GY-80.jpeg' %}" alt="GY-80" style="max-width: 100%; height: auto;">
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
 </body>
 </html>
