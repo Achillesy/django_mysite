@@ -128,4 +128,4 @@ STATICFILES_DIRS = [
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-ADXL345_QUERY_URL = 'http://192.168.137.14/data'
+ADXL345_QUERY_URL = 'http://192.168.137.150/data'
