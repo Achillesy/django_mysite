@@ -82,7 +82,7 @@ void setup() {
 
 void loop() {
   // Handle web server requests
-   
+  server.handleClient();
 }
 
 void handleRoot() {
