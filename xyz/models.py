@@ -1,7 +1,7 @@
 from django.db import models
 
 # Create your models here.
-class AccelerometerData(models.Model):
+class GY80Data(models.Model):
     acc_x = models.FloatField()
     acc_y = models.FloatField()
     acc_z = models.FloatField()
@@ -15,6 +15,3 @@ class AccelerometerData(models.Model):
     pressure = models.FloatField()
     altitude = models.FloatField()
     date = models.DateTimeField(auto_now_add=True)
-
-    class Meta:
-        app_label = 'xyz'

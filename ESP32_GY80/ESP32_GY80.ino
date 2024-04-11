@@ -102,18 +102,18 @@ void handleData() {
 
   // Create a JSON object with the data
   String json = "{";
-  json += "\"accX\": " + String(event.acceleration.x);
-  json += ", \"accY\": " + String(event.acceleration.y);
-  json += ", \"accZ\": " + String(event.acceleration.z);
-  json += ", \"gyroX\": " + String((int)gyro.g.x);
-  json += ", \"gyroY\": " + String((int)gyro.g.y);
-  json += ", \"gyroZ\": " + String((int)gyro.g.z);
-  json += ", \"magX\": " + String(mag_event.magnetic.x);
-  json += ", \"magY\": " + String(mag_event.magnetic.y);
-  json += ", \"magZ\": " + String(mag_event.magnetic.z);
-  json += ", \"Temperature\": " + String(bmp.readTemperature());
-  json += ", \"Pressure\": " + String(bmp.readPressure());
-  json += ", \"Altitude\": " + String(bmp.readAltitude());
+  json += "\"acc_x\": " + String(event.acceleration.x);
+  json += ", \"acc_y\": " + String(event.acceleration.y);
+  json += ", \"acc_z\": " + String(event.acceleration.z);
+  json += ", \"gyro_x\": " + String((int)gyro.g.x);
+  json += ", \"gyro_y\": " + String((int)gyro.g.y);
+  json += ", \"gyro_z\": " + String((int)gyro.g.z);
+  json += ", \"mag_x\": " + String(mag_event.magnetic.x);
+  json += ", \"mag_y\": " + String(mag_event.magnetic.y);
+  json += ", \"mag_z\": " + String(mag_event.magnetic.z);
+  json += ", \"temperature\": " + String(bmp.readTemperature());
+  json += ", \"pressure\": " + String(bmp.readPressure());
+  json += ", \"altitude\": " + String(bmp.readAltitude());
   json += "}";
 
   // Send the JSON data to the client
