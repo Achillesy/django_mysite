@@ -56,19 +56,27 @@ void handleData() {
   float data[12];
   getSensorData(data);
 
-  server.setContentLength(sizeof(data));
-  server.send(200, "application/octet-stream", (const char*)data);
+  // 直接从二进制数据创建String对象
+  String content((char*)data, sizeof(data));
+
+  // Send the data
+  server.send(200, "application/octet-stream", content);
 
 #ifdef DEBUG
-  Serial.print("Sent data: ");
-  const uint8_t* bytePtr = (const uint8_t*)data;
-  for (size_t i = 0; i < sizeof(data); i++) {
-    Serial.print(bytePtr[i], HEX);
-    Serial.print(" ");
-  }
+  // Print the sensor data for debugging
+  Serial.print("Accelerometer: X = "); Serial.print(data[0]);
+  Serial.print(", Y = "); Serial.print(data[1]);
+  Serial.print(", Z = "); Serial.print(data[2]);
+  Serial.print(" | Gyro: X = "); Serial.print(data[3]);
+  Serial.print(", Y = "); Serial.print(data[4]);
+  Serial.print(", Z = "); Serial.print(data[5]);
+  Serial.print(" | Magnetometer: X = "); Serial.print(data[6]);
+  Serial.print(", Y = "); Serial.print(data[7]);
+  Serial.print(", Z = "); Serial.print(data[8]);
+  Serial.print(" | Temperature = "); Serial.print(data[9]);
+  Serial.print(" | Pressure = "); Serial.print(data[10]);
+  Serial.print(" | Altitude = "); Serial.print(data[11]);
   Serial.println();
-#else
-  Serial.println("Data sent");
 #endif
 }
 
