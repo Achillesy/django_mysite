@@ -14,110 +14,88 @@ const char* password = "1318995CX";
 // Web server port
 const int port = 80;
 
-// ADXL345 sensor
+// Define DEBUG macro for debugging
+#define DEBUG
+
+// Sensor instances
 Adafruit_ADXL345_Unified accel = Adafruit_ADXL345_Unified(12345);
-/* Assign a unique ID to this sensor at the same time */
 Adafruit_HMC5883_Unified mag = Adafruit_HMC5883_Unified(12345);
-
 L3G gyro;
-
 Adafruit_BMP085 bmp;
 
 // Web server instance
 WebServer server(port);
 
-void setup() {
-  // Serial port for debugging
-  Serial.begin(115200);
-  while (!Serial) {
-    delay(10);
-  }
+// Function to get sensor data as an array of floats
+void getSensorData(float data[12]) {
+  sensors_event_t accel_event;
+  accel.getEvent(&accel_event);
 
-  // Initialize WiFi
+  data[0] = accel_event.acceleration.x;
+  data[1] = accel_event.acceleration.y;
+  data[2] = accel_event.acceleration.z;
+
+  gyro.read();
+  data[3] = static_cast<float>(gyro.g.x);
+  data[4] = static_cast<float>(gyro.g.y);
+  data[5] = static_cast<float>(gyro.g.z);
+
+  sensors_event_t mag_event;
+  mag.getEvent(&mag_event);
+
+  data[6] = mag_event.magnetic.x;
+  data[7] = mag_event.magnetic.y;
+  data[8] = mag_event.magnetic.z;
+
+  data[9] = bmp.readTemperature();
+  data[10] = bmp.readPressure();
+  data[11] = bmp.readAltitude();
+}
+
+void handleData() {
+  float data[12];
+  getSensorData(data);
+
+  server.setContentLength(sizeof(data));
+  server.send(200, "application/octet-stream", (const char*)data);
+
+#ifdef DEBUG
+  Serial.print("Sent data: ");
+  const uint8_t* bytePtr = (const uint8_t*)data;
+  for (size_t i = 0; i < sizeof(data); i++) {
+    Serial.print(bytePtr[i], HEX);
+    Serial.print(" ");
+  }
+  Serial.println();
+#else
+  Serial.println("Data sent");
+#endif
+}
+
+// Setup and loop functions
+void setup() {
+  Serial.begin(115200);
+
+  // WiFi setup
   WiFi.begin(ssid, password);
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
     Serial.print(".");
   }
-  Serial.println("");
-  Serial.print("WiFi connected, IP address: ");
-  Serial.println(WiFi.localIP());
+  Serial.println("\nWiFi connected, IP address: " + WiFi.localIP().toString());
 
-  // Initialize ADXL345 sensor
-  if (!accel.begin()) {
-    Serial.println("Ooops, no ADXL345 detected ... Check your wiring!");
+  // Sensor initialization
+  if (!accel.begin() || !gyro.init() || !bmp.begin() || !mag.begin()) {
+    Serial.println("Failed to initialize sensors");
     while (1);
   }
-  // Set the range to whatever is appropriate for your project
-  accel.setRange(ADXL345_RANGE_16_G);
 
-  if (!gyro.init())
-  {
-    Serial.println("Failed to autodetect gyro type!");
-    while (1);
-  }
-  gyro.enableDefault();
-
-  if (!bmp.begin())
-  {
-      Serial.println("BMP085 sensor not found, check connections!");
-      while (1);
-  }
-
-  /* Initialise the sensor */
-  if(!mag.begin())
-  {
-    /* There was a problem detecting the HMC5883 ... check your connections */
-    Serial.println("Ooops, no HMC5883 detected ... Check your wiring!");
-    while(1);
-  }
-
-  // Web server routes
-  server.on("/", handleRoot);
+  // Web server setup
   server.on("/data", handleData);
-
-  // Start the web server
   server.begin();
   Serial.println("HTTP server started");
 }
 
 void loop() {
-  // Handle web server requests
   server.handleClient();
-}
-
-void handleRoot() {
-  // Send a simple HTML page with a link to the data endpoint
-  String html = "<!DOCTYPE html><html><head><title>GY80 Data</title></head><body><h1>GY80 Data</h1><p><a href=\"/data\">Get data</a></p></body></html>";
-  server.send(200, "text/html", html);
-}
-
-void handleData() {
-  // Get sensor data
-  sensors_event_t event;
-  accel.getEvent(&event);
-  gyro.read();
-  /* Get a new sensor event */ 
-  sensors_event_t mag_event; 
-  mag.getEvent(&mag_event);
-
-  // Create a JSON object with the data
-  String json = "{";
-  json += "\"acc_x\": " + String(event.acceleration.x);
-  json += ", \"acc_y\": " + String(event.acceleration.y);
-  json += ", \"acc_z\": " + String(event.acceleration.z);
-  json += ", \"gyro_x\": " + String((int)gyro.g.x);
-  json += ", \"gyro_y\": " + String((int)gyro.g.y);
-  json += ", \"gyro_z\": " + String((int)gyro.g.z);
-  json += ", \"mag_x\": " + String(mag_event.magnetic.x);
-  json += ", \"mag_y\": " + String(mag_event.magnetic.y);
-  json += ", \"mag_z\": " + String(mag_event.magnetic.z);
-  json += ", \"temperature\": " + String(bmp.readTemperature());
-  json += ", \"pressure\": " + String(bmp.readPressure());
-  json += ", \"altitude\": " + String(bmp.readAltitude());
-  json += "}";
-
-  // Send the JSON data to the client
-  server.send(200, "application/json", json);
-  Serial.println(json);
 }
